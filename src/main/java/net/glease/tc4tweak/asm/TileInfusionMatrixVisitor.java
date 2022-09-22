@@ -14,7 +14,7 @@ public class TileInfusionMatrixVisitor extends ClassVisitor {
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
         final MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions);
         if (name.equals("craftCycle") && desc.equals("()V")) {
-            TC4Transformer.log.debug("Injecting Math#abs before Random#nextInt calls in CraftCycle()");
+            TC4Transformer.log.debug("Injecting Math#max before Random#nextInt calls in CraftCycle()");
             return new LoadMathAbsVisitor(api, mv);
         } else {
             return mv;
@@ -30,7 +30,8 @@ public class TileInfusionMatrixVisitor extends ClassVisitor {
         @Override
         public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean itf) {
             if(opcode == Opcodes.INVOKEVIRTUAL && owner.equals("java/util/Random") && name.equals("nextInt") && desc.equals("(I)I") && !itf) {
-                mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/Math", "abs", "(I)I", false);
+                mv.visitLdcInsn(1);
+                mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/Math", "max", "(II)I", false);
             }
             super.visitMethodInsn(opcode, owner, name, desc, itf);
         }
