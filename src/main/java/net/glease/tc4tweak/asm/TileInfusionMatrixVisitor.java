@@ -30,12 +30,10 @@ public class TileInfusionMatrixVisitor extends ClassVisitor {
         @Override
         public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean itf) {
             if(opcode == Opcodes.INVOKEVIRTUAL && owner.equals("java/util/Random") && name.equals("nextInt") && desc.equals("(I)I") && !itf) {
-                mv.visitLdcInsn(1);
+                mv.visitInsn(Opcodes.ICONST_1);
                 mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/Math", "max", "(II)I", false);
             }
             super.visitMethodInsn(opcode, owner, name, desc, itf);
         }
-
     }
-
 }
