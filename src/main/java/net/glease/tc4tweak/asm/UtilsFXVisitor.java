@@ -1,9 +1,9 @@
 package net.glease.tc4tweak.asm;
 
+import static net.glease.tc4tweak.asm.ASMConstants.ASMCALLHOOK_INTERNAL_NAME;
+
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
-
-import static net.glease.tc4tweak.asm.ASMConstants.ASMCALLHOOK_INTERNAL_NAME;
 
 class UtilsFXVisitor extends ClassVisitor {
     public UtilsFXVisitor(int api, ClassVisitor cv) {

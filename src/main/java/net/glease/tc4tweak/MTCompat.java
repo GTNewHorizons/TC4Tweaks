@@ -16,9 +16,7 @@ public class MTCompat {
         FlushableCache.enableAll(true);
         MineTweakerAPI.apply(new IUndoableAction() {
             @Override
-            public void apply() {
-
-            }
+            public void apply() {}
 
             @Override
             public boolean canUndo() {

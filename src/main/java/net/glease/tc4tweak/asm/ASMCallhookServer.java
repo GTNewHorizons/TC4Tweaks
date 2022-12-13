@@ -1,5 +1,6 @@
 package net.glease.tc4tweak.asm;
 
+import java.util.Map.Entry;
 import net.glease.tc4tweak.ConfigurationHandler;
 import net.glease.tc4tweak.modules.findCrucibleRecipe.FindCrucibleRecipe;
 import net.glease.tc4tweak.modules.findRecipes.FindRecipes;
@@ -36,11 +37,8 @@ import thaumcraft.common.lib.world.dim.CellLoc;
 import thaumcraft.common.lib.world.dim.MazeHandler;
 import thaumcraft.common.tiles.TileArcaneWorkbench;
 
-import java.util.Map.Entry;
-
 public class ASMCallhookServer {
-    private ASMCallhookServer() {
-    }
+    private ASMCallhookServer() {}
 
     /**
      * Called from both {@link ItemWandCasting#getFocusItem(ItemStack)} and {@link ItemWandCasting#getFocus(ItemStack)}
@@ -73,7 +71,9 @@ public class ASMCallhookServer {
     @Callhook
     public static AspectList findMatchingArcaneRecipeAspects(IInventory awb, EntityPlayer player) {
         IArcaneRecipe recipe = FindRecipes.findArcaneRecipe(awb, player);
-        return recipe == null ? new AspectList() : recipe.getAspects() == null ? recipe.getAspects(awb) : recipe.getAspects();
+        return recipe == null
+                ? new AspectList()
+                : recipe.getAspects() == null ? recipe.getAspects(awb) : recipe.getAspects();
     }
 
     @Callhook
@@ -92,19 +92,29 @@ public class ASMCallhookServer {
     @Callhook
     public static void onArcaneWorkbenchChanged(TileArcaneWorkbench tileEntity, InventoryPlayer ip) {
         // only check synced config if in remote world
-        if (ConfigurationHandler.INSTANCE.isCheckWorkbenchRecipes() && (!tileEntity.getWorldObj().isRemote || NetworkedConfiguration.isCheckWorkbenchRecipes())) {
+        if (ConfigurationHandler.INSTANCE.isCheckWorkbenchRecipes()
+                && (!tileEntity.getWorldObj().isRemote || NetworkedConfiguration.isCheckWorkbenchRecipes())) {
             InventoryCrafting ic = new InventoryCrafting(new ContainerDummy(), 3, 3);
             for (int a = 0; a < 9; ++a) {
                 ic.setInventorySlotContents(a, tileEntity.getStackInSlot(a));
             }
-            tileEntity.setInventorySlotContentsSoftly(9, CraftingManager.getInstance().findMatchingRecipe(ic, tileEntity.getWorldObj()));
+            tileEntity.setInventorySlotContentsSoftly(
+                    9, CraftingManager.getInstance().findMatchingRecipe(ic, tileEntity.getWorldObj()));
         } else {
             tileEntity.setInventorySlotContentsSoftly(9, null);
         }
-        if (tileEntity.getStackInSlot(9) == null && tileEntity.getStackInSlot(10) != null && tileEntity.getStackInSlot(10).getItem() instanceof ItemWandCasting) {
-            ItemWandCasting wand = (ItemWandCasting) tileEntity.getStackInSlot(10).getItem();
-            if (wand.consumeAllVisCrafting(tileEntity.getStackInSlot(10), ip.player, ThaumcraftCraftingManager.findMatchingArcaneRecipeAspects(tileEntity, ip.player), false)) {
-                tileEntity.setInventorySlotContentsSoftly(9, ThaumcraftCraftingManager.findMatchingArcaneRecipe(tileEntity, ip.player));
+        if (tileEntity.getStackInSlot(9) == null
+                && tileEntity.getStackInSlot(10) != null
+                && tileEntity.getStackInSlot(10).getItem() instanceof ItemWandCasting) {
+            ItemWandCasting wand =
+                    (ItemWandCasting) tileEntity.getStackInSlot(10).getItem();
+            if (wand.consumeAllVisCrafting(
+                    tileEntity.getStackInSlot(10),
+                    ip.player,
+                    ThaumcraftCraftingManager.findMatchingArcaneRecipeAspects(tileEntity, ip.player),
+                    false)) {
+                tileEntity.setInventorySlotContentsSoftly(
+                        9, ThaumcraftCraftingManager.findMatchingArcaneRecipe(tileEntity, ip.player));
             }
         }
     }
@@ -153,8 +163,10 @@ public class ASMCallhookServer {
     @Callhook
     public static boolean canNodeBeSeen(TileVisNode source, TileVisNode target) {
         World world = source.getWorldObj();
-        Vec3 v1 = Vec3.createVectorHelper((double) source.xCoord + 0.5D, (double) source.yCoord + 0.5D, (double) source.zCoord + 0.5D);
-        Vec3 v2 = Vec3.createVectorHelper((double) target.xCoord + 0.5D, (double) target.yCoord + 0.5D, (double) target.zCoord + 0.5D);
+        Vec3 v1 = Vec3.createVectorHelper(
+                (double) source.xCoord + 0.5D, (double) source.yCoord + 0.5D, (double) source.zCoord + 0.5D);
+        Vec3 v2 = Vec3.createVectorHelper(
+                (double) target.xCoord + 0.5D, (double) target.yCoord + 0.5D, (double) target.zCoord + 0.5D);
         if (Double.isNaN(v1.xCoord) || Double.isNaN(v1.yCoord) || Double.isNaN(v1.zCoord)) return false;
         if (Double.isNaN(v2.xCoord) || Double.isNaN(v2.yCoord) || Double.isNaN(v2.zCoord)) return false;
         int i = MathHelper.floor_double(v2.xCoord);
@@ -267,15 +279,15 @@ public class ASMCallhookServer {
                     --j1;
                 }
 
-                if (l == target.xCoord && i1 == target.yCoord && j1 == target.zCoord)
-                    return true;
+                if (l == target.xCoord && i1 == target.yCoord && j1 == target.zCoord) return true;
 
                 Block block1 = world.getBlock(l, i1, j1);
                 int l1 = world.getBlockMetadata(l, i1, j1);
                 if (block1.canCollideCheck(l1, false)) {
                     if (block1.getCollisionBoundingBoxFromPool(world, l, i1, j1) != null) {
                         MovingObjectPosition movingobjectposition1 = block1.collisionRayTrace(world, l, i1, j1, v1, v2);
-                        if (movingobjectposition1 != null && movingobjectposition1.typeOfHit != MovingObjectPosition.MovingObjectType.MISS) {
+                        if (movingobjectposition1 != null
+                                && movingobjectposition1.typeOfHit != MovingObjectPosition.MovingObjectType.MISS) {
                             return false;
                         }
                     }

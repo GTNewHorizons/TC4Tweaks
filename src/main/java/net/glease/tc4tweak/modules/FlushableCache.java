@@ -1,7 +1,6 @@
 package net.glease.tc4tweak.modules;
 
 import gnu.trove.map.TIntObjectMap;
-
 import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.Objects;
@@ -14,8 +13,7 @@ public abstract class FlushableCache<E> {
 
     protected FlushableCache() {
         allCaches.add(new WeakReference<>(this));
-        if (enabled)
-            populate(true);
+        if (enabled) populate(true);
     }
 
     private static void cleanStale() {
@@ -23,7 +21,10 @@ public abstract class FlushableCache<E> {
     }
 
     public static void enableAll(boolean doCreate) {
-        allCaches.stream().map(WeakReference::get).filter(Objects::nonNull).forEach(flushableCache -> flushableCache.populate(doCreate));
+        allCaches.stream()
+                .map(WeakReference::get)
+                .filter(Objects::nonNull)
+                .forEach(flushableCache -> flushableCache.populate(doCreate));
         enabled = true;
         cleanStale();
     }
@@ -39,8 +40,7 @@ public abstract class FlushableCache<E> {
     }
 
     protected void populate(boolean doCreate) {
-        if (doCreate || cache == null)
-            cache = createCache();
+        if (doCreate || cache == null) cache = createCache();
     }
 
     protected abstract E createCache();

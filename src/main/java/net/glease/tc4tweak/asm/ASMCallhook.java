@@ -1,6 +1,13 @@
 package net.glease.tc4tweak.asm;
 
+import static net.glease.tc4tweak.TC4Tweak.log;
+
 import cpw.mods.fml.relauncher.ReflectionHelper;
+import java.lang.reflect.Field;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.WeakHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import net.glease.tc4tweak.ClientProxy;
 import net.glease.tc4tweak.ClientUtils;
 import net.glease.tc4tweak.ConfigurationHandler;
@@ -15,14 +22,6 @@ import thaumcraft.client.gui.GuiResearchTable;
 import thaumcraft.client.lib.UtilsFX;
 import thaumcraft.common.tiles.TileMagicWorkbench;
 
-import java.lang.reflect.Field;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.WeakHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import static net.glease.tc4tweak.TC4Tweak.log;
-
 public class ASMCallhook {
     private static final WeakHashMap<TileMagicWorkbench, Void> postponed = new WeakHashMap<>();
     private static final AtomicBoolean cacheUsed = new AtomicBoolean(false);
@@ -32,8 +31,7 @@ public class ASMCallhook {
     private static long start;
     private static Field fieldParticleTexture;
 
-    private ASMCallhook() {
-    }
+    private ASMCallhook() {}
 
     /**
      * Called from {@link thaumcraft.client.gui.GuiResearchRecipe#getFromCache(int)}
@@ -50,8 +48,7 @@ public class ASMCallhook {
     public static void onMappingStart(Map<String, Integer> mapping) {
         if (ConfigurationHandler.INSTANCE.isMappingThreadNice())
             Thread.currentThread().setPriority(1);
-        else
-            priorityChanged = true;
+        else priorityChanged = true;
         log.info("TC4 Mapping start. {} entries to work with.", mapping.size());
         start = System.nanoTime();
     }
@@ -129,25 +126,57 @@ public class ASMCallhook {
     }
 
     @Callhook
-    public static void renderFacingStrip(double px, double py, double pz, float angle, float scale, float alpha, int frames, int strip, int frame, float partialTicks, int color) {
-        UtilsFX.renderFacingStrip(px, py, pz, angle, Math.min(scale, ConfigurationHandler.INSTANCE.getNodeVisualSizeLimit()), alpha, frames, strip, frame, partialTicks, color);
+    public static void renderFacingStrip(
+            double px,
+            double py,
+            double pz,
+            float angle,
+            float scale,
+            float alpha,
+            int frames,
+            int strip,
+            int frame,
+            float partialTicks,
+            int color) {
+        UtilsFX.renderFacingStrip(
+                px,
+                py,
+                pz,
+                angle,
+                Math.min(scale, ConfigurationHandler.INSTANCE.getNodeVisualSizeLimit()),
+                alpha,
+                frames,
+                strip,
+                frame,
+                partialTicks,
+                color);
     }
 
     @Callhook
-    public static void renderAnimatedQuadStrip(float scale, float alpha, int frames, int strip, int cframe, float partialTicks, int color) {
-        UtilsFX.renderAnimatedQuadStrip(Math.min(scale, ConfigurationHandler.INSTANCE.getNodeVisualSizeLimit()), alpha, frames, strip, cframe, partialTicks, color);
+    public static void renderAnimatedQuadStrip(
+            float scale, float alpha, int frames, int strip, int cframe, float partialTicks, int color) {
+        UtilsFX.renderAnimatedQuadStrip(
+                Math.min(scale, ConfigurationHandler.INSTANCE.getNodeVisualSizeLimit()),
+                alpha,
+                frames,
+                strip,
+                cframe,
+                partialTicks,
+                color);
     }
 
     /**
      * Draw research browser borders. Called from GuiResearchBrowser#genResearchBackground
      */
     @Callhook
-    public static void drawResearchBrowserBorders(GuiResearchBrowser gui, int x, int y, int u, int v, int width, int height) {
+    public static void drawResearchBrowserBorders(
+            GuiResearchBrowser gui, int x, int y, int u, int v, int width, int height) {
         DrawResearchBrowserBorders.drawResearchBrowserBorders(gui, x, y, u, v, width, height);
     }
 
     @Callhook
-    public static void drawResearchBrowserBackground(GuiResearchBrowser gui, int x, int y, int u, int v, int width, int height) {
+    public static void drawResearchBrowserBackground(
+            GuiResearchBrowser gui, int x, int y, int u, int v, int width, int height) {
         DrawResearchBrowserBorders.drawResearchBrowserBackground(gui, x, y, u, v, width, height);
     }
 
@@ -204,9 +233,9 @@ public class ASMCallhook {
     }
 
     @Callhook
-    public static void drawResearchCategoryHintParticles(int x, int y, int u, int v, int width, int height, double zLevel, GuiResearchBrowser gui) {
-        if (x < gui.width / 2)
-            UtilsFX.drawTexturedQuad(x, y, u, v, width, height, zLevel);
+    public static void drawResearchCategoryHintParticles(
+            int x, int y, int u, int v, int width, int height, double zLevel, GuiResearchBrowser gui) {
+        if (x < gui.width / 2) UtilsFX.drawTexturedQuad(x, y, u, v, width, height, zLevel);
         else {
             x += 16;
             ClientUtils.drawRectTextured(x, x + width, y, y + height, u + width, u, v + height, v, zLevel);
@@ -217,7 +246,8 @@ public class ASMCallhook {
     public static ResourceLocation getParticleTexture() {
         try {
             if (fieldParticleTexture == null)
-                fieldParticleTexture = ReflectionHelper.findField(EffectRenderer.class, "particleTextures", "b", "field_110737_b");
+                fieldParticleTexture =
+                        ReflectionHelper.findField(EffectRenderer.class, "particleTextures", "b", "field_110737_b");
             return (ResourceLocation) fieldParticleTexture.get(null);
         } catch (Exception ignored) {
             return null;

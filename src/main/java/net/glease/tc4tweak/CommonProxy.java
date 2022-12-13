@@ -15,10 +15,10 @@ public class CommonProxy {
     public void preInit(FMLPreInitializationEvent e) {
         ConfigurationHandler.INSTANCE.init(e.getSuggestedConfigurationFile());
 
-        if (Loader.isModLoaded("MineTweaker3"))
-            MTCompat.preInit();
+        if (Loader.isModLoaded("MineTweaker3")) MTCompat.preInit();
 
-        TC4Tweak.INSTANCE.CHANNEL.registerMessage(MessageSendConfiguration.class, MessageSendConfiguration.class, 0, Side.CLIENT);
+        TC4Tweak.INSTANCE.CHANNEL.registerMessage(
+                MessageSendConfiguration.class, MessageSendConfiguration.class, 0, Side.CLIENT);
         int debugadd = Integer.getInteger("glease.debug.addtc4tabs.pre", 0);
         addDummyCategories(debugadd, "DUMMYPRE");
     }
@@ -28,8 +28,7 @@ public class CommonProxy {
         NetworkedConfiguration.resetCheckWorkbenchRecipes();
     }
 
-    public void init(FMLInitializationEvent e) {
-    }
+    public void init(FMLInitializationEvent e) {}
 
     public void postInit(FMLPostInitializationEvent e) {
         int debugadd = Integer.getInteger("glease.debug.addtc4tabs.post", 0);
@@ -40,7 +39,10 @@ public class CommonProxy {
 
     private void addDummyCategories(int amount, String categoryPrefix) {
         for (int i = 0; i < amount; i++) {
-            ResearchCategories.registerCategory(categoryPrefix + i, new ResourceLocation("thaumcraft", "textures/items/thaumonomiconcheat.png"), new ResourceLocation("thaumcraft", "textures/gui/gui_researchback.png"));
+            ResearchCategories.registerCategory(
+                    categoryPrefix + i,
+                    new ResourceLocation("thaumcraft", "textures/items/thaumonomiconcheat.png"),
+                    new ResourceLocation("thaumcraft", "textures/gui/gui_researchback.png"));
         }
     }
 }

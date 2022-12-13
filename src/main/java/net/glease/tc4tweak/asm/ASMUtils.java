@@ -1,14 +1,12 @@
 package net.glease.tc4tweak.asm;
 
+import static org.objectweb.asm.Opcodes.*;
+
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 
-import static org.objectweb.asm.Opcodes.*;
-
 final class ASMUtils {
-    private ASMUtils() {
-
-    }
+    private ASMUtils() {}
 
     /**
      * Write a method that delegate the call to a static method in another class.
@@ -21,7 +19,8 @@ final class ASMUtils {
      * @param clazz       The internal name of the owner class. NULL if static method
      * @param desc        The descriptor of this method.
      */
-    public static void writeMethodDeflected(String targetClass, String targetName, MethodVisitor mv, String clazz, String desc) {
+    public static void writeMethodDeflected(
+            String targetClass, String targetName, MethodVisitor mv, String clazz, String desc) {
         int base;
         String targetDesc;
         if (clazz == null) {

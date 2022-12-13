@@ -1,10 +1,10 @@
 package net.glease.tc4tweak.asm;
 
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.MethodVisitor;
-
 import static net.glease.tc4tweak.asm.ASMConstants.ASMCALLHOOK_INTERNAL_NAME;
 import static org.objectweb.asm.Opcodes.*;
+
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.MethodVisitor;
 
 class MappingThreadVisitor extends ClassVisitor {
 

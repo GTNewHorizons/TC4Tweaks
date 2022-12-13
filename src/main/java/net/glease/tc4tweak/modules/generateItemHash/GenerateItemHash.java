@@ -1,24 +1,18 @@
 package net.glease.tc4tweak.modules.generateItemHash;
 
-import com.google.common.collect.ImmutableList;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.ReflectionHelper;
-import net.minecraft.block.Block;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import thaumcraft.api.ThaumcraftApi;
-import thaumcraft.api.aspects.AspectList;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static net.glease.tc4tweak.TC4Tweak.log;
+import net.minecraft.block.Block;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import thaumcraft.api.ThaumcraftApi;
 
 public class GenerateItemHash {
     private static final String DEFAULT_NAMESPACE = "oops:";
@@ -109,7 +103,8 @@ public class GenerateItemHash {
             return hash(item, meta, t);
         }
 
-        // NOTE!! This block does not function 100% the same as vanilla TC4, but this SHOULD be the correct way to handle
+        // NOTE!! This block does not function 100% the same as vanilla TC4, but this SHOULD be the correct way to
+        // handle
         // it.
         // nobody uses ranged object tag specification anyway
         if (rangedObjectTags.isEnabled()) {
@@ -126,7 +121,9 @@ public class GenerateItemHash {
             for (List<?> l : ThaumcraftApi.objectTags.keySet()) {
                 String name = ((Item) l.get(0)).getUnlocalizedName();
                 // this is probably not correct, but vanilla TC4 does it.
-                if (l.get(1) instanceof int[] && (Item.itemRegistry.getObject(name) == item || Block.blockRegistry.getObject(name) == Block.getBlockFromItem(item))) {
+                if (l.get(1) instanceof int[]
+                        && (Item.itemRegistry.getObject(name) == item
+                                || Block.blockRegistry.getObject(name) == Block.getBlockFromItem(item))) {
                     int[] range = (int[]) l.get(1);
                     Arrays.sort(range);
                     if (Arrays.binarySearch(range, meta) >= 0) {
@@ -139,8 +136,7 @@ public class GenerateItemHash {
         if (meta == -1) {
             for (int i = 0; i < 16; i++) {
                 key.set(1, i);
-                if (ThaumcraftApi.objectTags.containsKey(key))
-                    return hash(item, i, t);
+                if (ThaumcraftApi.objectTags.containsKey(key)) return hash(item, i, t);
             }
         }
         return hash(item, meta, t);
@@ -163,16 +159,14 @@ public class GenerateItemHash {
     private static int getUniqueIdentifierHash(Item item, ItemStack t) {
         if (customItemStacksCache.isEnabled()) {
             String name = Item.itemRegistry.getNameForObject(item);
-            if (name == null)
-                return DEFAULT_NAMESPACE_HASH_BASE;
+            if (name == null) return DEFAULT_NAMESPACE_HASH_BASE;
             if (customItemStacksCache.getCache().contains(name))
                 return t.getUnlocalizedName().hashCode();
             return name.hashCode();
         } else {
             try {
                 GameRegistry.UniqueIdentifier ui = GameRegistry.findUniqueIdentifierFor(item);
-                if (ui == null)
-                    return t.getUnlocalizedName().hashCode();
+                if (ui == null) return t.getUnlocalizedName().hashCode();
                 return updateHash(updateHashColon(ui.modId.hashCode()), ui.name);
             } catch (Exception e) {
                 return DEFAULT_NAMESPACE_HASH_BASE;
@@ -182,20 +176,28 @@ public class GenerateItemHash {
 
     public static void onNewObjectTag(List<?> key) {
         if (key.get(1) instanceof int[] && rangedObjectTags.isEnabled()) {
-            rangedObjectTags.getCache().merge((Item) key.get(0), Collections.singletonList((int[]) key.get(1)), (a, b) -> Stream.concat(a.stream(), b.stream()).collect(Collectors.toList()));
+            rangedObjectTags
+                    .getCache()
+                    .merge((Item) key.get(0), Collections.singletonList((int[]) key.get(1)), (a, b) -> Stream.concat(
+                                    a.stream(), b.stream())
+                            .collect(Collectors.toList()));
         }
     }
 
     public static void onRemoveObjectTag(List<?> key) {
         if (key.get(1) instanceof int[] && rangedObjectTags.isEnabled()) {
-            rangedObjectTags.getCache()
-                    .computeIfPresent((Item) key.get(0), (k, a) -> toNullIfEmpty(a.stream().filter(arr -> !Arrays.equals(arr, (int[]) key.get(1))).collect(Collectors.toList())));
+            rangedObjectTags
+                    .getCache()
+                    .computeIfPresent(
+                            (Item) key.get(0),
+                            (k, a) -> toNullIfEmpty(a.stream()
+                                    .filter(arr -> !Arrays.equals(arr, (int[]) key.get(1)))
+                                    .collect(Collectors.toList())));
         }
     }
 
     private static <C extends Collection<?>> C toNullIfEmpty(C c) {
-        if (c == null || c.isEmpty())
-            return null;
+        if (c == null || c.isEmpty()) return null;
         return c;
     }
 }

@@ -1,10 +1,10 @@
 package net.glease.tc4tweak.asm;
 
+import static org.objectweb.asm.Opcodes.*;
+
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
-
-import static org.objectweb.asm.Opcodes.*;
 
 class FXSonicVisitor extends ClassVisitor {
 
@@ -27,7 +27,8 @@ class FXSonicVisitor extends ClassVisitor {
 
     @Override
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
-        return new FieldModelScrubberVisitor(api, name, desc, super.visitMethod(access, name, desc, signature, exceptions));
+        return new FieldModelScrubberVisitor(
+                api, name, desc, super.visitMethod(access, name, desc, signature, exceptions));
     }
 
     private static class FieldModelScrubberVisitor extends MethodVisitor {
@@ -42,8 +43,11 @@ class FXSonicVisitor extends ClassVisitor {
 
         @Override
         public void visitFieldInsn(int opcode, String owner, String name, String desc) {
-            if (owner.equals("thaumcraft/client/fx/other/FXSonic") && name.equals(FIELD_MODEL_NAME) && desc.equals(FIELD_MODEL_DESC)) {
-                TC4Transformer.log.debug("Replacing opcode {} with {} in method {}{}", opcode, opcode - 2, this.name, this.desc);
+            if (owner.equals("thaumcraft/client/fx/other/FXSonic")
+                    && name.equals(FIELD_MODEL_NAME)
+                    && desc.equals(FIELD_MODEL_DESC)) {
+                TC4Transformer.log.debug(
+                        "Replacing opcode {} with {} in method {}{}", opcode, opcode - 2, this.name, this.desc);
                 if (opcode == GETFIELD) {
                     // before
                     // ..., this, -> ..., model,
