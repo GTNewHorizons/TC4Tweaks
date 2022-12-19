@@ -1,11 +1,11 @@
 package net.glease.tc4tweak.asm;
 
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.MethodVisitor;
-
 import static net.glease.tc4tweak.asm.ASMConstants.ASMCALLHOOKSERVER_INTERNAL_NAME;
 import static org.objectweb.asm.Opcodes.INVOKESTATIC;
 import static org.objectweb.asm.Opcodes.PUTFIELD;
+
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.MethodVisitor;
 
 class AIItemPickupVisitor extends ClassVisitor {
     public AIItemPickupVisitor(int api, ClassVisitor cv) {
@@ -28,8 +28,11 @@ class AIItemPickupVisitor extends ClassVisitor {
 
         @Override
         public void visitFieldInsn(int opcode, String owner, String name, String desc) {
-            if (opcode == PUTFIELD && "thaumcraft/common/entities/ai/inventory/AIItemPickup".equals(owner) && "targetEntity".equals(name)) {
-                super.visitMethodInsn(INVOKESTATIC, ASMCALLHOOKSERVER_INTERNAL_NAME, "onlyIfAlive", "(" + desc + ")" + desc, false);
+            if (opcode == PUTFIELD
+                    && "thaumcraft/common/entities/ai/inventory/AIItemPickup".equals(owner)
+                    && "targetEntity".equals(name)) {
+                super.visitMethodInsn(
+                        INVOKESTATIC, ASMCALLHOOKSERVER_INTERNAL_NAME, "onlyIfAlive", "(" + desc + ")" + desc, false);
             }
             super.visitFieldInsn(opcode, owner, name, desc);
         }

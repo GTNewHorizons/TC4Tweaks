@@ -3,6 +3,9 @@ package net.glease.tc4tweak.modules.researchBrowser;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
+import java.lang.reflect.Field;
+import java.nio.ByteBuffer;
+import java.util.*;
 import net.glease.tc4tweak.ConfigurationHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -25,10 +28,6 @@ import thaumcraft.client.gui.GuiResearchBrowser;
 import thaumcraft.client.gui.GuiResearchRecipe;
 import thaumcraft.client.lib.UtilsFX;
 import thaumcraft.common.config.ConfigItems;
-
-import java.lang.reflect.Field;
-import java.nio.ByteBuffer;
-import java.util.*;
 
 /**
  * Adapted from Witching Gadgets
@@ -53,8 +52,7 @@ public class ThaumonomiconIndexSearcher {
         if (mouseBuffer == null)
             try {
                 Field f_buf = Mouse.class.getDeclaredFields()[mouseBufferIdent];
-                if (!f_buf.getName().equalsIgnoreCase("readBuffer"))
-                    f_buf = Mouse.class.getDeclaredField("readBuffer");
+                if (!f_buf.getName().equalsIgnoreCase("readBuffer")) f_buf = Mouse.class.getDeclaredField("readBuffer");
                 f_buf.setAccessible(true);
                 mouseBuffer = (ByteBuffer) f_buf.get(null);
             } catch (Exception e) {
@@ -75,7 +73,9 @@ public class ThaumonomiconIndexSearcher {
     }
 
     private static int getResultDisplayAreaX(GuiScreen gui) {
-        return gui.width / 2 + ConfigurationHandler.INSTANCE.getBrowserWidth() / 2 + (ResearchCategories.researchCategories.size() > BrowserPaging.getTabPerSide() ? 24 : 0);
+        return gui.width / 2
+                + ConfigurationHandler.INSTANCE.getBrowserWidth() / 2
+                + (ResearchCategories.researchCategories.size() > BrowserPaging.getTabPerSide() ? 24 : 0);
     }
 
     private static void buildEntryList(String query) {
@@ -97,18 +97,26 @@ public class ThaumonomiconIndexSearcher {
         Set<SearchQuery> recipeBased = new HashSet<>();
         Set<String> usedResearches = new HashSet<>();
         for (String key : keys)
-            if (key != null && !key.isEmpty() && ResearchCategories.getResearch(key) != null && ThaumcraftApiHelper.isResearchComplete(Minecraft.getMinecraft().thePlayer.getCommandSenderName(), key)) {
-                if (ResearchCategories.getResearch(key).getName().startsWith("tc.research_name"))
-                    continue;
+            if (key != null
+                    && !key.isEmpty()
+                    && ResearchCategories.getResearch(key) != null
+                    && ThaumcraftApiHelper.isResearchComplete(
+                            Minecraft.getMinecraft().thePlayer.getCommandSenderName(), key)) {
+                if (ResearchCategories.getResearch(key).getName().startsWith("tc.research_name")) continue;
                 recipeBased.clear();
                 ResearchPage[] pages = ResearchCategories.getResearch(key).getPages();
                 if (pages != null)
                     for (ResearchPage page : pages) {
-                        if (page.recipeOutput != null && page.recipeOutput.getDisplayName().toLowerCase().contains(query)) {
+                        if (page.recipeOutput != null
+                                && page.recipeOutput
+                                        .getDisplayName()
+                                        .toLowerCase()
+                                        .contains(query)) {
                             String dn;
                             if (page.recipeOutput.getItem() == ConfigItems.itemGolemCore) {
                                 StringBuilder sb = new StringBuilder();
-                                for (Object info : page.recipeOutput.getTooltip(Minecraft.getMinecraft().thePlayer, false))
+                                for (Object info :
+                                        page.recipeOutput.getTooltip(Minecraft.getMinecraft().thePlayer, false))
                                     sb.append(info).append(" ");
                                 dn = sb.toString();
                             } else {
@@ -122,15 +130,20 @@ public class ThaumonomiconIndexSearcher {
                     }
                 boolean rAdded = false;
                 if (recipeBased.size() <= 1) {
-                    if (!usedResearches.contains(ResearchCategories.getResearch(key).getName()))
-                        if (key.toLowerCase().contains(query) || ResearchCategories.getResearch(key).getName().toLowerCase().contains(query)) {
+                    if (!usedResearches.contains(
+                            ResearchCategories.getResearch(key).getName()))
+                        if (key.toLowerCase().contains(query)
+                                || ResearchCategories.getResearch(key)
+                                        .getName()
+                                        .toLowerCase()
+                                        .contains(query)) {
                             valids.add(new SearchQuery(key, null));
-                            usedResearches.add(ResearchCategories.getResearch(key).getName());
+                            usedResearches.add(
+                                    ResearchCategories.getResearch(key).getName());
                             rAdded = true;
                         }
                 }
-                if (!rAdded)
-                    valids.addAll(recipeBased);
+                if (!rAdded) valids.addAll(recipeBased);
             }
         valids.sort(ResearchSorter.instance);
         searchResults = valids;
@@ -152,7 +165,12 @@ public class ThaumonomiconIndexSearcher {
         if (event.gui.getClass().getName().endsWith("GuiResearchBrowser")) {
             int width = ConfigurationHandler.INSTANCE.getBrowserWidth();
             int height = ConfigurationHandler.INSTANCE.getBrowserHeight();
-            thaumSearchField = new GuiTextField(event.gui.mc.fontRenderer, event.gui.width / 2, event.gui.height / 2 - height / 2 + 5, Math.min(width / 2 - 20, 120), 13);
+            thaumSearchField = new GuiTextField(
+                    event.gui.mc.fontRenderer,
+                    event.gui.width / 2,
+                    event.gui.height / 2 - height / 2 + 5,
+                    Math.min(width / 2 - 20, 120),
+                    13);
             thaumSearchField.setTextColor(-1);
             thaumSearchField.setDisabledTextColour(-1);
             thaumSearchField.setEnableBackgroundDrawing(false);
@@ -176,24 +194,39 @@ public class ThaumonomiconIndexSearcher {
                         if (thaumSearchField.isFocused() && button == 1) {
                             thaumSearchField.setText("");
                             searchResults.clear();
-                        } else if (mx > (event.gui.width / 2 + ConfigurationHandler.INSTANCE.getBrowserWidth() / 2 + (ResearchCategories.researchCategories.size() > BrowserPaging.getTabPerSide() ? 24 : 2)) && my > event.gui.height / 2 - ConfigurationHandler.INSTANCE.getBrowserHeight() / 2 && my < event.gui.height / 2 + ConfigurationHandler.INSTANCE.getBrowserHeight() / 2) {
-                            int clicked = my - (event.gui.height / 2 - ConfigurationHandler.INSTANCE.getBrowserHeight() / 2 + 6);
+                        } else if (mx
+                                        > (event.gui.width / 2
+                                                + ConfigurationHandler.INSTANCE.getBrowserWidth() / 2
+                                                + (ResearchCategories.researchCategories.size()
+                                                                > BrowserPaging.getTabPerSide()
+                                                        ? 24
+                                                        : 2))
+                                && my > event.gui.height / 2 - ConfigurationHandler.INSTANCE.getBrowserHeight() / 2
+                                && my < event.gui.height / 2 + ConfigurationHandler.INSTANCE.getBrowserHeight() / 2) {
+                            int clicked = my
+                                    - (event.gui.height / 2 - ConfigurationHandler.INSTANCE.getBrowserHeight() / 2 + 6);
                             clicked /= 11;
                             int selected = clicked + listDisplayOffset;
                             if (selected < searchResults.size()) {
-                                ResearchItem item = ResearchCategories.getResearch(searchResults.get(selected).research);
-                                event.gui.mc.displayGuiScreen(new GuiResearchRecipe(item, 0, item.displayColumn, item.displayRow));
+                                ResearchItem item =
+                                        ResearchCategories.getResearch(searchResults.get(selected).research);
+                                event.gui.mc.displayGuiScreen(
+                                        new GuiResearchRecipe(item, 0, item.displayColumn, item.displayRow));
                             }
                         }
-                    } else if (wheel != 0 && mx > (event.gui.width / 2 + ConfigurationHandler.INSTANCE.getBrowserWidth() / 2 + (ResearchCategories.researchCategories.size() > BrowserPaging.getTabPerSide() ? 24 : 2))) {
-                        if (wheel < 0)
-                            listDisplayOffset++;
-                        else
-                            listDisplayOffset--;
+                    } else if (wheel != 0
+                            && mx
+                                    > (event.gui.width / 2
+                                            + ConfigurationHandler.INSTANCE.getBrowserWidth() / 2
+                                            + (ResearchCategories.researchCategories.size()
+                                                            > BrowserPaging.getTabPerSide()
+                                                    ? 24
+                                                    : 2))) {
+                        if (wheel < 0) listDisplayOffset++;
+                        else listDisplayOffset--;
                         if (listDisplayOffset > searchResults.size() - 20)
                             listDisplayOffset = searchResults.size() - 20;
-                        if (listDisplayOffset < 0)
-                            listDisplayOffset = 0;
+                        if (listDisplayOffset < 0) listDisplayOffset = 0;
                     }
                 }
         }
@@ -219,17 +252,44 @@ public class ThaumonomiconIndexSearcher {
                 tes.draw();
             }
             UtilsFX.bindTexture("textures/gui/guiresearchtable2.png");
-            event.gui.drawTexturedModalRect(thaumSearchField.xPosition - 2, thaumSearchField.yPosition - 4, 94, 8, thaumSearchField.width + 8, thaumSearchField.height);
-            event.gui.drawTexturedModalRect(thaumSearchField.xPosition - 2, thaumSearchField.yPosition + thaumSearchField.height - 4, 138, 158, thaumSearchField.width + 8, 2);
-            event.gui.drawTexturedModalRect(thaumSearchField.xPosition + thaumSearchField.width + 6, thaumSearchField.yPosition - 4, 244, 136, 2, thaumSearchField.height + 2);
+            event.gui.drawTexturedModalRect(
+                    thaumSearchField.xPosition - 2,
+                    thaumSearchField.yPosition - 4,
+                    94,
+                    8,
+                    thaumSearchField.width + 8,
+                    thaumSearchField.height);
+            event.gui.drawTexturedModalRect(
+                    thaumSearchField.xPosition - 2,
+                    thaumSearchField.yPosition + thaumSearchField.height - 4,
+                    138,
+                    158,
+                    thaumSearchField.width + 8,
+                    2);
+            event.gui.drawTexturedModalRect(
+                    thaumSearchField.xPosition + thaumSearchField.width + 6,
+                    thaumSearchField.yPosition - 4,
+                    244,
+                    136,
+                    2,
+                    thaumSearchField.height + 2);
 
             if ((searchResults == null || searchResults.isEmpty()) && !thaumSearchField.isFocused())
-                event.gui.drawString(event.gui.mc.fontRenderer, StatCollector.translateToLocal("tc4tweaks.gui.search"), thaumSearchField.xPosition, thaumSearchField.yPosition, 0x777777);
+                event.gui.drawString(
+                        event.gui.mc.fontRenderer,
+                        StatCollector.translateToLocal("tc4tweaks.gui.search"),
+                        thaumSearchField.xPosition,
+                        thaumSearchField.yPosition,
+                        0x777777);
             else
                 for (int i = 0; i < 20; i++)
                     if (i + listDisplayOffset < searchResults.size()) {
-                        String name = searchResults.get(listDisplayOffset + i).display != null ? searchResults.get(listDisplayOffset + i).display : ResearchCategories.getResearch(searchResults.get(listDisplayOffset + i).research).getName();
-                        name = searchResults.get(listDisplayOffset + i).modifier + event.gui.mc.fontRenderer.trimStringToWidth(name, maxWidth - 10);
+                        String name = searchResults.get(listDisplayOffset + i).display != null
+                                ? searchResults.get(listDisplayOffset + i).display
+                                : ResearchCategories.getResearch(searchResults.get(listDisplayOffset + i).research)
+                                        .getName();
+                        name = searchResults.get(listDisplayOffset + i).modifier
+                                + event.gui.mc.fontRenderer.trimStringToWidth(name, maxWidth - 10);
                         event.gui.mc.fontRenderer.drawString(name, x + 6, y + 6 + i * 11, 0xffffff, false);
                     }
 
@@ -268,8 +328,12 @@ public class ThaumonomiconIndexSearcher {
 
         @Override
         public int compare(SearchQuery o1, SearchQuery o2) {
-            String c1 = o1.display != null ? o1.display : ResearchCategories.getResearch(o1.research).getName();
-            String c2 = o2.display != null ? o2.display : ResearchCategories.getResearch(o2.research).getName();
+            String c1 = o1.display != null
+                    ? o1.display
+                    : ResearchCategories.getResearch(o1.research).getName();
+            String c2 = o2.display != null
+                    ? o2.display
+                    : ResearchCategories.getResearch(o2.research).getName();
             return c1.compareToIgnoreCase(c2);
         }
     }

@@ -1,11 +1,11 @@
 package net.glease.tc4tweak.asm;
 
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.MethodVisitor;
-
 import static net.glease.tc4tweak.asm.LoadingPlugin.dev;
 import static net.glease.tc4tweak.asm.TC4Transformer.log;
 import static org.objectweb.asm.Opcodes.*;
+
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.MethodVisitor;
 
 public class AddOnDataPacketMarkBlockForRenderUpdateVisitor extends ClassVisitor {
 
@@ -27,7 +27,8 @@ public class AddOnDataPacketMarkBlockForRenderUpdateVisitor extends ClassVisitor
     public void visitEnd() {
         log.debug("Adding onDataPacket with World#func_147479_m to {}", className);
         String name = "onDataPacket";
-        String desc = "(Lnet/minecraft/network/NetworkManager;Lnet/minecraft/network/play/server/S35PacketUpdateTileEntity;)V";
+        String desc =
+                "(Lnet/minecraft/network/NetworkManager;Lnet/minecraft/network/play/server/S35PacketUpdateTileEntity;)V";
         MethodVisitor mv = cv.visitMethod(ACC_PUBLIC, name, desc, null, null);
         mv.visitCode();
         mv.visitVarInsn(ALOAD, 0);
@@ -35,7 +36,11 @@ public class AddOnDataPacketMarkBlockForRenderUpdateVisitor extends ClassVisitor
         mv.visitVarInsn(ALOAD, 2);
         mv.visitMethodInsn(INVOKESPECIAL, superClass, name, desc, false);
         mv.visitVarInsn(ALOAD, 0);
-        mv.visitFieldInsn(GETFIELD, "net/minecraft/tileentity/TileEntity", dev ? "worldObj" : "field_145850_b", "Lnet/minecraft/world/World;");
+        mv.visitFieldInsn(
+                GETFIELD,
+                "net/minecraft/tileentity/TileEntity",
+                dev ? "worldObj" : "field_145850_b",
+                "Lnet/minecraft/world/World;");
         mv.visitVarInsn(ALOAD, 0);
         mv.visitFieldInsn(GETFIELD, "net/minecraft/tileentity/TileEntity", dev ? "xCoord" : "field_145851_c", "I");
         mv.visitVarInsn(ALOAD, 0);

@@ -12,11 +12,6 @@ import cpw.mods.fml.common.versioning.DefaultArtifactVersion;
 import cpw.mods.fml.common.versioning.VersionParser;
 import cpw.mods.fml.common.versioning.VersionRange;
 import cpw.mods.fml.relauncher.Side;
-import net.glease.tc4tweak.asm.LoadingPlugin;
-import net.glease.tc4tweak.network.MessageSendConfiguration;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.security.cert.Certificate;
@@ -24,8 +19,17 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
+import net.glease.tc4tweak.asm.LoadingPlugin;
+import net.glease.tc4tweak.network.MessageSendConfiguration;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-@Mod(modid = TC4Tweak.MOD_ID, name = "TC4 Tweak", version = TC4Tweak.VERSION, dependencies = "required-after:Thaumcraft", guiFactory = "net.glease.tc4tweak.GuiFactory")
+@Mod(
+        modid = TC4Tweak.MOD_ID,
+        name = "TC4 Tweak",
+        version = TC4Tweak.VERSION,
+        dependencies = "required-after:Thaumcraft",
+        guiFactory = "net.glease.tc4tweak.GuiFactory")
 public class TC4Tweak {
     public static final String MOD_ID = "tc4tweak";
     public static final String VERSION = "${version}";
@@ -35,10 +39,13 @@ public class TC4Tweak {
             .put("473C3A397676978FF4877ABA2D57860DDA20E2FC", "glease")
             .put("004227A857B097EDE4E36FACB9B5491BC9808464", "glease")
             .build();
+
     @Mod.Instance
     public static TC4Tweak INSTANCE;
+
     @SidedProxy(serverSide = "net.glease.tc4tweak.CommonProxy", clientSide = "net.glease.tc4tweak.ClientProxy")
     static CommonProxy proxy;
+
     public final SimpleNetworkWrapper CHANNEL = new SimpleNetworkWrapper(MOD_ID);
     private boolean allowAll = true;
 
@@ -58,12 +65,13 @@ public class TC4Tweak {
 
     private String getFingerprintDescriptions() {
         try {
-            Certificate[] certificates = LoadingPlugin.class.getProtectionDomain().getCodeSource().getCertificates();
-            if (certificates == null || certificates.length == 0)
-                return "None. Do not bother glease for this crash!";
+            Certificate[] certificates =
+                    LoadingPlugin.class.getProtectionDomain().getCodeSource().getCertificates();
+            if (certificates == null || certificates.length == 0) return "None. Do not bother glease for this crash!";
             // everyone can tamper the manifest and add a Built-By or sign a jar,
             // not so for signatures
-            return Arrays.stream(certificates).map(c -> CertificateHelper.getFingerprint(c).toUpperCase(Locale.ROOT))
+            return Arrays.stream(certificates)
+                    .map(c -> CertificateHelper.getFingerprint(c).toUpperCase(Locale.ROOT))
                     .map(f -> f.replace(".", "") + ", Built by: " + KNOWN_SIGNATURE.getOrDefault(f, "Not known"))
                     .collect(Collectors.joining("; "));
         } catch (Exception e) {
@@ -107,7 +115,10 @@ public class TC4Tweak {
     public boolean checkConnection(Map<String, String> remoteVersions, Side side) {
         if (side == Side.CLIENT) {
             String remoteVersionString = remoteVersions.getOrDefault(MOD_ID, null);
-            return allowAll || remoteVersionString != null && ACCEPTED_CLIENT_VERSION.containsVersion(new DefaultArtifactVersion(MOD_ID, remoteVersionString));
+            return allowAll
+                    || remoteVersionString != null
+                            && ACCEPTED_CLIENT_VERSION.containsVersion(
+                                    new DefaultArtifactVersion(MOD_ID, remoteVersionString));
         }
         return true;
     }

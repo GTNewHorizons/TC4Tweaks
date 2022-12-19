@@ -3,6 +3,14 @@ package net.glease.tc4tweak.modules.objectTag;
 import gnu.trove.iterator.TIntObjectIterator;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import net.glease.tc4tweak.modules.generateItemHash.GenerateItemHash;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -20,15 +28,6 @@ import thaumcraft.api.aspects.AspectList;
 import thaumcraft.common.items.wands.ItemWandCasting;
 import thaumcraft.common.lib.crafting.ThaumcraftCraftingManager;
 
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-
 public class GetObjectTags {
     static final Logger log = LogManager.getLogger("GetObjectTags");
     private static final ObjectTagsCache cache = new ObjectTagsCache();
@@ -41,7 +40,12 @@ public class GetObjectTags {
     public static Stream<Map.Entry<ItemStack, AspectList>> stream() {
         if (cache.isEnabled())
             return cache.getCache().entrySet().stream()
-                    .flatMap(e -> StreamSupport.stream(Spliterators.spliterator(iterate(e.getKey(), e.getValue()), e.getValue().size(), Spliterator.DISTINCT | Spliterator.NONNULL), false));
+                    .flatMap(e -> StreamSupport.stream(
+                            Spliterators.spliterator(
+                                    iterate(e.getKey(), e.getValue()),
+                                    e.getValue().size(),
+                                    Spliterator.DISTINCT | Spliterator.NONNULL),
+                            false));
         return Stream.empty();
     }
 
@@ -72,8 +76,7 @@ public class GetObjectTags {
             return null;
         }
 
-        if (item == null)
-            return null;
+        if (item == null) return null;
 
         AspectList tmp = getBaseObjectTags(item, meta);
         if (tmp == null)
@@ -97,8 +100,7 @@ public class GetObjectTags {
                 if (meta == OreDictionary.WILDCARD_VALUE) {
                     for (int index = 0; index < 16; ++index) {
                         tmp = ThaumcraftApi.objectTags.get(Arrays.asList(item, index));
-                        if (tmp != null)
-                            break;
+                        if (tmp != null) break;
                     }
                 }
 
@@ -140,8 +142,12 @@ public class GetObjectTags {
      * Add wand related aspects
      */
     private static void addWandTags(ItemStack itemstack, AspectList tmp, ItemWandCasting wand) {
-        tmp.merge(Aspect.MAGIC, (wand.getRod(itemstack).getCraftCost() + wand.getCap(itemstack).getCraftCost()) / 2);
-        tmp.merge(Aspect.TOOL, (wand.getRod(itemstack).getCraftCost() + wand.getCap(itemstack).getCraftCost()) / 3);
+        tmp.merge(
+                Aspect.MAGIC,
+                (wand.getRod(itemstack).getCraftCost() + wand.getCap(itemstack).getCraftCost()) / 2);
+        tmp.merge(
+                Aspect.TOOL,
+                (wand.getRod(itemstack).getCraftCost() + wand.getCap(itemstack).getCraftCost()) / 3);
     }
 
     /**
@@ -212,8 +218,7 @@ public class GetObjectTags {
     @Nullable
     private static AspectList getBaseObjectTags(Item item, int meta) {
         ConcurrentMap<Item, TIntObjectMap<AspectList>> cache = GetObjectTags.cache.getCache();
-        if (cache == null)
-            return null;
+        if (cache == null) return null;
         TIntObjectMap<AspectList> submap = cache.get(item);
         if (submap != null) {
             AspectList aspectList;
@@ -237,7 +242,8 @@ public class GetObjectTags {
             Item item = (Item) key.get(0);
             if (key.get(1) instanceof int[]) {
                 int[] metas = (int[]) key.get(1);
-                TIntObjectMap<AspectList> submap = cache.computeIfAbsent(item, k -> new TIntObjectHashMap<>(metas.length));
+                TIntObjectMap<AspectList> submap =
+                        cache.computeIfAbsent(item, k -> new TIntObjectHashMap<>(metas.length));
                 for (int meta : metas) action.accept(submap, meta);
             } else if (key.get(1) instanceof Integer) {
                 action.accept(cache.computeIfAbsent(item, k -> new TIntObjectHashMap<>()), ((Integer) key.get(1)));

@@ -1,10 +1,9 @@
 package net.glease.tc4tweak.modules.getResearch;
 
-import thaumcraft.api.research.ResearchCategories;
-import thaumcraft.api.research.ResearchItem;
-
 import java.util.Map;
 import java.util.stream.Stream;
+import thaumcraft.api.research.ResearchCategories;
+import thaumcraft.api.research.ResearchItem;
 
 /**
  * getResearch speed up
@@ -12,8 +11,7 @@ import java.util.stream.Stream;
 public class GetResearch {
     private static final ResearchItemCache cache = new ResearchItemCache();
 
-    private GetResearch() {
-    }
+    private GetResearch() {}
 
     /**
      * Called from {@link ResearchCategories#getResearch(String)}
@@ -35,6 +33,7 @@ public class GetResearch {
         return ResearchCategories.researchCategories.values().stream()
                 .flatMap(l -> l.research.values().stream())
                 .filter(i -> key.equals(i.key))
-                .findFirst().orElse(null);
+                .findFirst()
+                .orElse(null);
     }
 }

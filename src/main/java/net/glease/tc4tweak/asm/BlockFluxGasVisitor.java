@@ -1,9 +1,9 @@
 package net.glease.tc4tweak.asm;
 
+import static org.objectweb.asm.Opcodes.*;
+
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
-
-import static org.objectweb.asm.Opcodes.*;
 
 public class BlockFluxGasVisitor extends ClassVisitor {
     public BlockFluxGasVisitor(int api, ClassVisitor cv) {
@@ -18,7 +18,12 @@ public class BlockFluxGasVisitor extends ClassVisitor {
         mv.visitInsn(IRETURN);
         mv.visitMaxs(1, 5);
         mv.visitEnd();
-        mv = super.visitMethod(ACC_PUBLIC, "drain", "(Lnet/minecraft/world/World;IIIZ)Lnet/minecraftforge/fluids/FluidStack;", null, null);
+        mv = super.visitMethod(
+                ACC_PUBLIC,
+                "drain",
+                "(Lnet/minecraft/world/World;IIIZ)Lnet/minecraftforge/fluids/FluidStack;",
+                null,
+                null);
         mv.visitCode();
         mv.visitInsn(ACONST_NULL);
         mv.visitInsn(ARETURN);

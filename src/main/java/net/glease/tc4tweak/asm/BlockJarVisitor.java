@@ -1,11 +1,11 @@
 package net.glease.tc4tweak.asm;
 
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.MethodVisitor;
-
 import static net.glease.tc4tweak.asm.LoadingPlugin.dev;
 import static net.glease.tc4tweak.asm.TC4Transformer.log;
 import static org.objectweb.asm.Opcodes.*;
+
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.MethodVisitor;
 
 public class BlockJarVisitor extends ClassVisitor {
     public BlockJarVisitor(int api, ClassVisitor cv) {
@@ -27,9 +27,19 @@ public class BlockJarVisitor extends ClassVisitor {
                         mv.visitVarInsn(ILOAD, 2);
                         mv.visitVarInsn(ILOAD, 3);
                         mv.visitVarInsn(ILOAD, 4);
-                        mv.visitMethodInsn(INVOKEVIRTUAL, "net/minecraft/world/World", dev ? "markBlockForUpdate" : "func_147471_g", "(III)V", false);
+                        mv.visitMethodInsn(
+                                INVOKEVIRTUAL,
+                                "net/minecraft/world/World",
+                                dev ? "markBlockForUpdate" : "func_147471_g",
+                                "(III)V",
+                                false);
                         mv.visitVarInsn(ALOAD, 10);
-                        mv.visitMethodInsn(INVOKEVIRTUAL, "net/minecraft/tileentity/TileEntity", dev ? "markDirty" : "func_70296_d", "()V", false);
+                        mv.visitMethodInsn(
+                                INVOKEVIRTUAL,
+                                "net/minecraft/tileentity/TileEntity",
+                                dev ? "markDirty" : "func_70296_d",
+                                "()V",
+                                false);
                     }
                 }
             };

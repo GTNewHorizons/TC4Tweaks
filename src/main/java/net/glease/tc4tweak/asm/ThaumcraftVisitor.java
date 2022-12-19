@@ -1,10 +1,10 @@
 package net.glease.tc4tweak.asm;
 
+import static org.objectweb.asm.Opcodes.*;
+
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
-
-import static org.objectweb.asm.Opcodes.*;
 
 public class ThaumcraftVisitor extends ClassVisitor {
     public ThaumcraftVisitor(int api, ClassVisitor cv) {
@@ -19,7 +19,7 @@ public class ThaumcraftVisitor extends ClassVisitor {
         }
         return mv;
     }
-    
+
     private static class AddFakePlayerGuardVisitor extends MethodVisitor {
         public AddFakePlayerGuardVisitor(int api, MethodVisitor mv) {
             super(api, mv);

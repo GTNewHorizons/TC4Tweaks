@@ -1,10 +1,15 @@
 package net.glease.tc4tweak.modules.researchBrowser;
 
+import static net.glease.tc4tweak.modules.researchBrowser.DrawResearchBrowserBorders.*;
+
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.relauncher.ReflectionHelper;
+import java.lang.reflect.Field;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import net.glease.tc4tweak.ClientUtils;
 import net.glease.tc4tweak.ConfigurationHandler;
 import net.minecraft.client.Minecraft;
@@ -17,12 +22,6 @@ import thaumcraft.api.research.ResearchCategoryList;
 import thaumcraft.client.gui.GuiResearchBrowser;
 import thaumcraft.client.lib.UtilsFX;
 import thaumcraft.common.lib.research.ResearchManager;
-
-import java.lang.reflect.Field;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import static net.glease.tc4tweak.modules.researchBrowser.DrawResearchBrowserBorders.*;
 
 public class BrowserPaging {
     public static final int BUTTON_HEIGHT = 8;
@@ -41,13 +40,16 @@ public class BrowserPaging {
         try {
             return ResearchManager.isResearchComplete((String) fieldPlayer.get(gui), "ELDRITCHMINOR");
         } catch (ReflectiveOperationException ignored) {
-            return true; //assume unlocked
+            return true; // assume unlocked
         }
     }
 
     private static void updateMaxPageIndex(GuiResearchBrowser gui) {
         int tabsPerPage = getTabPerSide() * 2;
-        int newMaxPageIndex = (ResearchCategories.researchCategories.size() - (isEldritchUnlocked(gui) ? 0 : 1) + tabsPerPage) / tabsPerPage - 1;
+        int newMaxPageIndex =
+                (ResearchCategories.researchCategories.size() - (isEldritchUnlocked(gui) ? 0 : 1) + tabsPerPage)
+                                / tabsPerPage
+                        - 1;
         if (newMaxPageIndex != maxPageIndex) {
             maxPageIndex = newMaxPageIndex;
             currentPageIndex = Math.min(currentPageIndex, BrowserPaging.maxPageIndex);
@@ -59,8 +61,7 @@ public class BrowserPaging {
         if (currentPageTabs == null) {
             int tabsPerPage = getTabPerSide() * 2;
             // reset in case tab count changed
-            if (currentPageIndex > maxPageIndex)
-                currentPageIndex = 0;
+            if (currentPageIndex > maxPageIndex) currentPageIndex = 0;
             currentPageTabs = new LinkedHashMap<>();
             int toSkip = tabsPerPage * currentPageIndex;
             for (Map.Entry<String, ResearchCategoryList> e : ResearchCategories.researchCategories.entrySet()) {
@@ -82,7 +83,8 @@ public class BrowserPaging {
 
     static void nextPage() {
         int tabsPerPage = getTabPerSide() * 2;
-        currentPageIndex = Math.min(currentPageIndex + 1, (ResearchCategories.researchCategories.size() + tabsPerPage) / tabsPerPage - 1);
+        currentPageIndex = Math.min(
+                currentPageIndex + 1, (ResearchCategories.researchCategories.size() + tabsPerPage) / tabsPerPage - 1);
         currentPageTabs = null;
     }
 
@@ -121,7 +123,16 @@ public class BrowserPaging {
                 GL11.glEnable(GL11.GL_BLEND);
                 GL11.glEnable(GL11.GL_DEPTH_TEST);
                 UtilsFX.bindTexture("textures/gui/guiresearchtable2.png");
-                ClientUtils.drawRectTextured(xPosition, xPosition + width, yPosition, yPosition + height, 184, 184 + 24, 208, 208 + 8, zLevel);
+                ClientUtils.drawRectTextured(
+                        xPosition,
+                        xPosition + width,
+                        yPosition,
+                        yPosition + height,
+                        184,
+                        184 + 24,
+                        208,
+                        208 + 8,
+                        zLevel);
                 GL11.glDisable(GL11.GL_DEPTH_TEST);
             }
         }
@@ -158,7 +169,16 @@ public class BrowserPaging {
                 GL11.glEnable(GL11.GL_BLEND);
                 GL11.glEnable(GL11.GL_DEPTH_TEST);
                 UtilsFX.bindTexture("textures/gui/guiresearchtable2.png");
-                ClientUtils.drawRectTextured(xPosition, xPosition + width, yPosition, yPosition + height, 207, 207 + 25, 208, 208 + 8, zLevel);
+                ClientUtils.drawRectTextured(
+                        xPosition,
+                        xPosition + width,
+                        yPosition,
+                        yPosition + height,
+                        207,
+                        207 + 25,
+                        208,
+                        208 + 8,
+                        zLevel);
                 GL11.glDisable(GL11.GL_DEPTH_TEST);
             }
         }
@@ -191,11 +211,27 @@ public class BrowserPaging {
         @SubscribeEvent(priority = EventPriority.HIGHEST)
         public void onGuiInitPre(GuiScreenEvent.InitGuiEvent.Pre e) {
             if (e.gui instanceof GuiResearchBrowser && ConfigurationHandler.INSTANCE.isInferBrowserScale()) {
-                int searchAreaSizeTimesTwo = ConfigurationHandler.INSTANCE.isInferBrowserScaleConsiderSearch() ? ThaumonomiconIndexSearcher.getResultDisplayAreaWidth(e.gui) * 2 : 0;
+                int searchAreaSizeTimesTwo = ConfigurationHandler.INSTANCE.isInferBrowserScaleConsiderSearch()
+                        ? ThaumonomiconIndexSearcher.getResultDisplayAreaWidth(e.gui) * 2
+                        : 0;
                 // factors to consider:
-                // width: browser itself. tab icons on both sides. search area. a visual gap (BORDER_WIDTH * 2) between the furthest element and window border
-                // height: browser itself. a visual gap (BORDER_HEIGHT * 2) between the furthest element and window border
-                ConfigurationHandler.INSTANCE.setBrowserScale(Math.max(1, Math.min(((float) e.gui.width - BORDER_WIDTH * 2 - searchAreaSizeTimesTwo - 24 * Math.min(2, ResearchCategories.researchCategories.size() / getTabPerSide())) / TEXTURE_WIDTH, ((float) e.gui.height - BORDER_HEIGHT * 2) / TEXTURE_HEIGHT)));
+                // width: browser itself. tab icons on both sides. search area. a visual gap (BORDER_WIDTH * 2) between
+                // the furthest element and window border
+                // height: browser itself. a visual gap (BORDER_HEIGHT * 2) between the furthest element and window
+                // border
+                ConfigurationHandler.INSTANCE.setBrowserScale(Math.max(
+                        1,
+                        Math.min(
+                                ((float) e.gui.width
+                                                - BORDER_WIDTH * 2
+                                                - searchAreaSizeTimesTwo
+                                                - 24
+                                                        * Math.min(
+                                                                2,
+                                                                ResearchCategories.researchCategories.size()
+                                                                        / getTabPerSide()))
+                                        / TEXTURE_WIDTH,
+                                ((float) e.gui.height - BORDER_HEIGHT * 2) / TEXTURE_HEIGHT)));
             }
         }
 
@@ -207,14 +243,23 @@ public class BrowserPaging {
                 // 5 here is small gap
                 int x1 = gui.width / 2 - ConfigurationHandler.INSTANCE.getBrowserWidth() / 2 + BORDER_WIDTH + 5;
                 // draw an additional black line
-                int x2 = gui.width / 2 + ConfigurationHandler.INSTANCE.getBrowserWidth() / 2 - BORDER_WIDTH - 5 - 1 - BUTTON_WIDTH;
-                int y = gui.height / 2 + ConfigurationHandler.INSTANCE.getBrowserHeight() / 2 - BORDER_HEIGHT / 2 - BUTTON_HEIGHT / 2;
+                int x2 = gui.width / 2
+                        + ConfigurationHandler.INSTANCE.getBrowserWidth() / 2
+                        - BORDER_WIDTH
+                        - 5
+                        - 1
+                        - BUTTON_WIDTH;
+                int y = gui.height / 2
+                        + ConfigurationHandler.INSTANCE.getBrowserHeight() / 2
+                        - BORDER_HEIGHT / 2
+                        - BUTTON_HEIGHT / 2;
                 e.buttonList.add(new ButtonPrevPage(0, x1, y));
                 e.buttonList.add(new ButtonNextPage(1, x2, y));
 
-
-                ReflectionHelper.setPrivateValue(GuiResearchBrowser.class, gui, ConfigurationHandler.INSTANCE.getBrowserWidth(), "paneWidth");
-                ReflectionHelper.setPrivateValue(GuiResearchBrowser.class, gui, ConfigurationHandler.INSTANCE.getBrowserHeight(), "paneHeight");
+                ReflectionHelper.setPrivateValue(
+                        GuiResearchBrowser.class, gui, ConfigurationHandler.INSTANCE.getBrowserWidth(), "paneWidth");
+                ReflectionHelper.setPrivateValue(
+                        GuiResearchBrowser.class, gui, ConfigurationHandler.INSTANCE.getBrowserHeight(), "paneHeight");
 
                 currentPageTabs = null;
                 updateMaxPageIndex(gui);

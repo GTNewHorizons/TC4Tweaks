@@ -1,12 +1,11 @@
 package net.glease.tc4tweak;
 
 import com.google.common.collect.ImmutableMap;
-import net.minecraftforge.common.config.Configuration;
-
-import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
+import javax.annotation.Nullable;
+import net.minecraftforge.common.config.Configuration;
 
 enum ConfigurationVersion {
     LEGACY(null) {
@@ -17,12 +16,12 @@ enum ConfigurationVersion {
     },
     V1 {
         private final String[] propsToClient = {
-                "inverted",
-                "updateInterval",
-                "addTooltip",
-                "browserScale",
-                "limitBookSearchToCategory",
-                "limitOversizedNodeRender",
+            "inverted",
+            "updateInterval",
+            "addTooltip",
+            "browserScale",
+            "limitBookSearchToCategory",
+            "limitOversizedNodeRender",
         };
 
         @Override
@@ -38,8 +37,7 @@ enum ConfigurationVersion {
                 "inferBrowserScale", "infer",
                 "inferBrowserScaleConsiderSearch", "considerSearchArea",
                 "inferBrowserScaleLowerBound", "minimum",
-                "inferBrowserScaleUpperBound", "maximum"
-        );
+                "inferBrowserScaleUpperBound", "maximum");
 
         @Override
         protected void step(Configuration c) {
@@ -73,7 +71,10 @@ enum ConfigurationVersion {
     }
 
     public static ConfigurationVersion identify(Configuration c) {
-        return Arrays.stream(VALUES).filter(v -> Objects.equals(c.getLoadedConfigVersion(), v.getVersionMarker())).findFirst().orElse(LEGACY);
+        return Arrays.stream(VALUES)
+                .filter(v -> Objects.equals(c.getLoadedConfigVersion(), v.getVersionMarker()))
+                .findFirst()
+                .orElse(LEGACY);
     }
 
     @Nullable

@@ -1,17 +1,26 @@
 package net.glease.tc4tweak;
 
 import cpw.mods.fml.relauncher.ReflectionHelper;
+import java.lang.reflect.Field;
+import java.util.List;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.Tessellator;
 
-import java.lang.reflect.Field;
-import java.util.List;
-
 public class ClientUtils {
-    private static final Field fieldButtonList = ReflectionHelper.findField(GuiScreen.class, "buttonList", "field_146292_n");
+    private static final Field fieldButtonList =
+            ReflectionHelper.findField(GuiScreen.class, "buttonList", "field_146292_n");
 
-    public static void drawRectTextured(double xmin, double xmax, double ymin, double ymax, double umin, double umax, double vmin, double vmax, double zLevel) {
+    public static void drawRectTextured(
+            double xmin,
+            double xmax,
+            double ymin,
+            double ymax,
+            double umin,
+            double umax,
+            double vmin,
+            double vmax,
+            double zLevel) {
         // can't just call gui.drawTexturedModalRect, it can't do width scales
         // assume texture is 256x256
         float f = 1f / 256f;
