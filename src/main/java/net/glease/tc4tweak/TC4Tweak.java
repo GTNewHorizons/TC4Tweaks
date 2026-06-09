@@ -30,7 +30,7 @@ import org.apache.logging.log4j.Logger;
 @Mod(modid = TC4Tweak.MOD_ID, name = "TC4 Tweak", version = TC4Tweak.VERSION, dependencies = "required-after:Thaumcraft", guiFactory = "net.glease.tc4tweak.GuiFactory")
 public class TC4Tweak {
     public static final String MOD_ID = "tc4tweak";
-    public static final String VERSION = "${version}";
+    public static final String VERSION = Tags.VERSION;
     public static final Logger log = LogManager.getLogger("TC4Tweaks");
     private static final VersionRange ACCEPTED_CLIENT_VERSION = VersionParser.parseRange("[1.4.27,2)");
     private static final ImmutableMap<String, String> KNOWN_SIGNATURE = ImmutableMap.<String, String>builder()

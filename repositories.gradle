@@ -1,0 +1,38 @@
+repositories {
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = 'glease'
+                url = 'https://maven.glease.net/repos/releases/'
+                metadataSources { artifact() }
+            }
+        }
+        filter {
+            includeGroup 'thaumcraft_fixed'
+            if (!version.toString().endsWith('SNAPSHOT'))
+                includeGroup 'net.glease'
+        }
+    }
+    if (version.toString().endsWith('SNAPSHOT')) {
+        exclusiveContent {
+            forRepository {
+                maven {
+                    name = 'glease-snapshots'
+                    url = 'https://maven.glease.net/repos/snapshots/'
+                    metadataSources { artifact() }
+                }
+            }
+            filter {
+                includeGroup 'net.glease'
+            }
+        }
+    }
+    maven {
+        name 'gt'
+        url 'https://gregtech.overminddl1.com/'
+    }
+    maven {
+        name 'minetweaker'
+        url 'https://maven.blamejared.com/'
+    }
+}
