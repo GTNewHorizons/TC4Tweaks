@@ -28,7 +28,7 @@ abstract class TC4TweaksDataDump extends DataDumper {
     @Override
     public Rectangle4i dumpButtonSize() {
         int width = 50;
-        return new Rectangle4i(slot.slotWidth() - width, 0, width, 20);
+        return new Rectangle4i(getSlot().slotWidth() - width, 0, width, 20);
     }
 
     @Override
